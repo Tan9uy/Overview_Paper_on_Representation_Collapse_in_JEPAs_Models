@@ -207,17 +207,17 @@ where $lambda, mu, nu > 0$ are hyperparameter weighting coefficients.
 
 To prevent representation collapse, Balestriero & LeCun introduced SIGReg (@balestriero2025sigreg, @lewm2026), proving that forcing latent representations into an isotropic Gaussian $cal(N)(0, I)$ minimizes expected prediction risk across downstream tasks.
 
-By the *Cramér-Wold theorem*, $Z$ is isotropic Gaussian if and only if every 1D projection $Z u$ along a unit direction $u in S^(d-1)$ follows $cal(N)(0, 1)$. SIGReg operationalizes this by projecting $Z in RR^(N times d)$ along $M$ random unit directions $U in RR^(d times M)$ and penalizing non-Gaussianity via the Epps-Pulley test $T_("EP")$:
+By the *Cramér-Wold theorem*, $Z$ is isotropic Gaussian if and only if every 1D projection $Z u$ along a unit direction $u in SS^(d-1)$ follows $cal(N)(0, 1)$. SIGReg operationalizes this by projecting $Z in RR^(N times d)$ along $M$ random unit directions $U in RR^(d times M)$ and penalizing non-Gaussianity via the Epps-Pulley test $T_("EP")$:
 
 $
-  T_("EP")(Z u) = N integral_(-5)^5 |hat(phi)_N (t ; Z u) - phi_0 (t)|^2 e^(-0.5 t^2) d t
+  T_("EP")(Z u) = N integral_(-inf)^(inf) |hat(phi)_N (t ; Z u) - phi_0 (t)|^2 w(t) d t
 $
 
-where $phi_0 (t) = e^(-0.5 t^2)$ is the theoretical Gaussian characteristic function and $hat(phi)_N (t ; Z u) = 1 / N sum_(j=1)^N e^(i t (Z u)_j)$ is the empirical characteristic function.
+where $phi_0 (t) = e^(-0.5 t^2)$ is the theoretical Gaussian characteristic function, $hat(phi)_N (t ; Z u) = 1 / N sum_(j=1)^N e^(i t (Z u)_j)$ is the empirical characteristic function, and $w(t) = e^(-0.5 t^2)$ is the Gaussian weighting window.
 
-The full joint-embedding loss pairs prediction accuracy with regularization:
+The full SIGReg regularization loss is obtained by taking the average of $T_("EP")$ across all $M$ projection directions:
 
-$ cal(L)_("LeWM") = cal(L)_("pred") + lambda cal(L)_("SIGReg")(Z) $
+$ cal(L)_("SIGReg")(Z) = 1 / M sum_(m=1)^M T_("EP")(Z u_m) $
 
 Compared to VICReg, this solution is simpler because there is only one hyperparameter and each encoder is independent so it works with multiple architectures. For complete PyTorch implementation details, see @fig-sigreg-code in Appendix A.
 
