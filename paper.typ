@@ -156,10 +156,6 @@ $
   ) in RR^(N times d)
 $
 
-Assuming zero-centered embeddings ($1/N sum_i Z_(i, :) = 0$).
-
-Let $sigma_1 >= sigma_2 >= ... >= sigma_d >= 0$ be the singular values of $Z$.
-
 == Complete Collapse
 
 Complete collapse occurs when different inputs are mapped to the same representation. For example, a model may produce nearly identical embeddings for images of healthy tissue and images containing a lesion. The prediction loss can nevertheless be small if both the predicted and target representations have collapsed to the same constant.
@@ -173,13 +169,13 @@ In this mode, the loss is minimized because the model has learned to ignore the 
 
 == Dimensional Collapse
 
-Dimensional collapse is subtler: embeddings retain some variation, but that variation is concentrated in only a small number of directions. The model may therefore distinguish certain features while losing others, even when its training loss remains stable. This loss of diversity can be investigated through the singular values of the embedding matrix $Z$ and summarized using its effective rank.
+Dimensional collapse is subtler: embeddings retain some variation, but that variation is concentrated in only a small number of directions. The model may therefore distinguish certain features while losing others, even when its training loss remains stable. Because the singular values $sigma_1 >= sigma_2 >= ... >= sigma_d >= 0$ measure the spread along orthogonal axes of the embedding space, their relative magnitudes reflect how information is distributed across dimensions. We can formalize this distribution using the effective rank:
 
 $
   "ER"(Z) = exp(- sum_(i=1)^d p_i log p_i), quad p_i = (sigma_i) / (sum_(j=1)^d sigma_j)
 $
 
-Intuitively, effective rank estimates how many dimensions contribute meaningfully to the representation. A low effective rank relative to the embedding dimension $d$ indicates that the embeddings use only a restricted portion of the available representation space.
+Here, $p_i$ represents the proportion of the singular value spectrum captured by the $i$-th direction. Intuitively, effective rank uses the Shannon entropy of $p$ to estimate how many dimensions contribute meaningfully to the representation. A low effective rank relative to the embedding dimension $d$ indicates that the embeddings use only a restricted portion of the available representation space. Conversely, a high effective rank indicates that variation is distributed more evenly across dimensions, although this alone does not guarantee that the learned representations are useful.
 
 
 = Methods to Prevent Representation Collapse
