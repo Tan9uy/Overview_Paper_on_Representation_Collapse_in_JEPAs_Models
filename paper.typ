@@ -231,48 +231,14 @@ SIGReg loss is simpler because there is only one hyperparameter $lambda$ and eac
 Although these methods can stabilize representation learning, they introduce
 different assumptions and practical trade-offs:
 
-- *VICReg: Dimensionality and Hyperparameter Sensitivity.*
-  VICReg relies on variance and covariance regularization to prevent
-  collapse. Computing the covariance matrix $C in RR^(d times d)$ can
-  become expensive for high-dimensional embeddings. Bardes et al.
-  @bardes2022vicreg report that reducing the expander dimensionality from
-  $d = 8192$ to $d = 256$ decreases top-1 accuracy from $68.8%$ to
-  $55.9%$ in their experimental setting. Moreover, balancing the three
-  loss weights ($lambda$, $mu$, $nu$) requires careful hyperparameter
-  tuning, which can complicate practical deployment.
+- *VICReg: Dimensionality and Hyperparameter Sensitivity.* VICReg relies on variance and covariance regularization to prevent collapse. Computing the covariance matrix $C in RR^(d times d)$ can become expensive for high-dimensional embeddings. Bardes et al. @bardes2022vicreg report that reducing the expander dimensionality from $d = 8192$ to $d = 256$ decreases top-1 accuracy from $68.8%$ to $55.9%$ in their experimental setting. Moreover, balancing the three loss weights ($lambda$, $mu$, $nu$) requires careful hyperparameter tuning, which can complicate practical deployment.
 
-- *SIGReg: Distributional Assumptions.*
-  SIGReg regularizes representations toward an isotropic Gaussian
-  distribution, encouraging variation across feature dimensions.
-  However, this assumption may not be equally suitable for every
-  dataset or downstream task, particularly when the desired
-  representations have complex, multimodal structure. Although SIGReg
-  evaluates the distribution more broadly than pairwise covariance
-  regularization, its effectiveness still depends on the task and
-  training objective. Its use of $M$ random projections also introduces
-  additional computation, especially for high-dimensional embeddings
-  @balestriero2025sigreg.
+- *SIGReg: Distributional Assumptions.* SIGReg regularizes representations toward an isotropic Gaussian distribution, encouraging variation across feature dimensions. However, this assumption may not be equally suitable for every dataset or downstream task, particularly when the desired representations have complex, multimodal structure. Although SIGReg evaluates the distribution more broadly than pairwise covariance regularization, its effectiveness still depends on the task and training objective. Its use of $M$ random projections also introduces additional computation, especially for high-dimensional embeddings @balestriero2025sigreg.
 
-- *Masking: Dependence on the Input Modality.*
-  Masking strategies used in image-based JEPAs, such as I-JEPA
-  @assran2023ijepa, rely on the spatial structure of images. Predicting
-  large, masked regions can encourage semantic learning rather than
-  local interpolation. However, the same strategy cannot necessarily
-  be transferred directly to sequential data, graphs, or other
-  non-spatial modalities. The masking strategy must be adapted to the
-  structure of the data to avoid trivial prediction shortcuts or
-  targets that are too difficult to predict.
+- *Masking: Dependence on the Input Modality.* Masking strategies used in image-based JEPAs, such as I-JEPA @assran2023ijepa, rely on the spatial structure of images. Predicting large, masked regions can encourage semantic learning rather than local interpolation. However, the same strategy cannot necessarily be transferred directly to sequential data, graphs, or other non-spatial modalities. The masking strategy must be adapted to the structure of the data to avoid trivial prediction shortcuts or targets that are too difficult to predict.
 
-- *Momentum Encoders: Training Sensitivity.*
-  Exponential moving averages (EMA), used in methods such as BYOL
-  @grill2020byol and I-JEPA @assran2023ijepa, update the target encoder
-  gradually using the context encoder's parameters. This can stabilize
-  training, but the momentum coefficient influences how quickly the
-  target encoder adapts. An unsuitable value may slow convergence or
-  affect representation quality, and these effects are not necessarily
-  reflected by the prediction loss alone. EMA should therefore be
-  understood as a practical stabilization mechanism rather than a
-  universal guarantee against collapse.
+- *Momentum Encoders: Training Sensitivity.* Exponential moving averages (EMA), used in methods such as BYOL @grill2020byol and I-JEPA @assran2023ijepa, update the target encoder gradually using the context encoder's parameters. This can stabilize training, but the momentum coefficient influences how quickly the target encoder adapts. An unsuitable value may slow convergence or affect representation quality, and these effects are not necessarily reflected by the prediction loss alone. EMA should therefore be understood as a practical stabilization mechanism rather than a universal guarantee against collapse.
+
 = Conclusion
 
 JEPAs present a computationally efficient alternative to generative pretraining in self-supervised learning, but their latent-space objectives introduce inherent risks of representation collapse. Dimensional collapse, in particular, can silently reduce feature diversity even if the prediction error is low. Consequently, robust training of JEPAs requires deliberate mitigation strategies, ranging from architectural choices, training dynamics, and explicit regularization methods such as VICReg and SIGReg. Successful representation learning needs balancing predictive consistency with sufficient diversity to preserve task-relevant information. Understanding the trade-offs of each method remains critical for scaling JEPAs to new modalities and complex real-world representations.
